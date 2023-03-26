@@ -1,4 +1,5 @@
 import csv
+import requests
 # Web-scraping of:
 # https://drug-interactions.medicine.iu.edu/MainTable.aspx
 # Ouverture du fichier CSV en mode lecture
@@ -84,3 +85,36 @@ def get_cyp_fhir_ressource(inter):
     return my_resource
 
 print(get_cyp_fhir_ressource(ddi_for_fhir[89]))
+
+host = 'https://fhir.st2c88fqxgfh.workload-nonprod-fhiraas.isccloud.io'
+api_key = 'ton token'
+
+def create_medication(my_drug):
+    my_resource = """{
+  "resourceType" : "Medication",
+  "id" : "%s",
+  "code" : {
+    "coding" : [{
+      "system" : "http://www.nlm.nih.gov/research/umls/rxnorm",
+      "code" : "%s",
+      "display" : "%s"
+    }]
+  }
+}"""%(my_drug[0], my_drug[1], my_drug[1])
+    return my_resource, my_drug[0]
+
+for drug in my_drugs:
+    json_drug,id = create_medication(drug)
+    # put the medication in the FHIR server
+    url = host + '/Medication'
+    # create the headers
+
+    headers = {
+        'Content-Type': 'application/json+fhir',
+        'x-api-key': api_key
+    }
+
+    # make the request
+    response = requests.put(url+'/'+str(id), headers=headers, data=json_drug)
+    # raise an exception in case of http errors
+    response.raise_for_status()
