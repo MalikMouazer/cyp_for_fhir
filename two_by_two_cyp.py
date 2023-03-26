@@ -19,6 +19,17 @@ with open('cyp_ddi_scrap.csv', newline='') as csvfile:
 ls_pa = ["citalopram", "amlodipine", "atorvastatin", "pantoprazole", "clopidogrel"]
 print(len(ddi_cyp))
 
+my_drugs = []
+drugs = []
+n = 0
+for ddi in ddi_cyp:
+    if(ddi[0] not in drugs):
+        n += 1
+        drugs.append(ddi[0])
+        my_drugs.append((n, ddi[0]))
+
+print("nb drugs  in db :", len(my_drugs))
+
 substrates_ddi = []
 not_sub_ddi = []
 for ddi in ddi_cyp:
